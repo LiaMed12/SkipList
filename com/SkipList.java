@@ -3,21 +3,21 @@ package com;
 
 import java.util.*;
 
-public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> implements Set<T> {
-    private Node head;
-    private Node tail;
+public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> implements SortedSet<T> {
+    private Node<T> head;
+    private Node<T> tail;
     private int height, maxNumberOfItems;
     private static final double COIN_FLIP_LIKELIHOOD = 0.5;
-    private Node current;
+    private Node<T> current;
 
-    public Node setCurrent(Node current) {
-        return this.current = current;
+    private void setCurrent(Node<T> current) {
+        this.current = current;
     }
 
     public SkipList() {
         current = null;
-        Node posInfinity = new Node(null);
-        Node negInfinity = new Node(null);
+        Node<T> posInfinity = new Node<>(null);
+        Node<T> negInfinity = new Node<>(null);
 
         head = posInfinity;
         tail = negInfinity;
@@ -30,12 +30,16 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
 
     }
 
-    public Node getHead() {
+    Node<T> getHead() {
         return head;
     }
 
+    Node<T> getTail() {
+        return tail;
+    }
+
     //Возвращает самый нижний узел
-    public Node valueSearchDownNode(Node k) {
+    Node<T> valueSearchDownNode(Node<T> k) {
         while (true) {
             if (k.down != null) {
                 k = k.down;
@@ -46,8 +50,8 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
         return k;
     }
 
-    public Node valueSearch(T k) {
-        Node point = head;
+    public Node<T> valueSearch(T k) {
+        Node<T> point = head;
         while (true) {
             while (point.right.getValue() != tail.getValue() && point.right.getValue().compareTo(k) <= 0) {
                 point = point.right;
@@ -62,7 +66,7 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
     }
 
     //Вставка дополнительного уровня
-    private Node<T> insertAfterAbove(Node p, Node<T> q, T k) {
+    private Node<T> insertAfterAbove(Node<T> p, Node<T> q, T k) {
         Node<T> el = new Node<>(k);
 
         el.left = p;
@@ -78,9 +82,9 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
 
 
     private T put(T k) {
-        Node searchResults = current;
+        Node<T> searchResults = current;
         if (k.equals(searchResults.getValue())) {
-            return (T) searchResults.getValue();
+            return searchResults.getValue();
         }
         Node<T> insertElement = new Node<>(k);
         insertElement.left = searchResults;
@@ -93,8 +97,8 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
             if (i >= height) {
                 height++;
 
-                Node pInf = new Node(null);
-                Node nInf = new Node(null);
+                Node<T> pInf = new Node<>(null);
+                Node<T> nInf = new Node<>(null);
 
                 pInf.right = nInf;
                 pInf.down = head;
@@ -121,7 +125,7 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
 
     private void deletion(T k) {
         while (true) {
-            Node result = current;
+            Node<T> result = current;
             if (!k.equals(result.getValue())) {
                 maxNumberOfItems--;
                 return;
@@ -155,7 +159,7 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
     @Override
     public boolean contains(Object o) {
         T e = (T) o;
-        Node node = valueSearch(e);
+        Node<T> node = valueSearch(e);
         return node.getValue() != null && node.getValue().equals(e);
     }
 
@@ -180,5 +184,65 @@ public class SkipList<T extends Comparable<T>> extends AbstractCollection<T> imp
         }
         deletion((T) o);
         return true;
+    }
+
+    @Override
+    public Comparator<? super T> comparator() {
+        throw new NullPointerException();
+    }
+
+    @Override
+    public SortedSet<T> subSet(T fromElement, T toElement) {
+        return new SkipListSet(this, fromElement, toElement).subset();
+    }
+
+    @Override
+    public SortedSet<T> headSet(T toElement) {
+        return new SkipListSet(this, toElement).headSet();
+    }
+
+    @Override
+    public SortedSet<T> tailSet(T fromElement) {
+        return new SkipListSet(this, fromElement).tailSet();
+    }
+
+    @Override
+    public T first() {
+        Node<T> fir = valueSearchDownNode(head);
+        return fir.right.getValue();
+    }
+
+    @Override
+    public T last() {
+        Node<T> las = valueSearchDownNode(tail);
+        return las.left.getValue();
+    }
+
+    @Override
+    public int hashCode() {
+        int h = 0;
+        Iterator<T> i = iterator();
+        while (i.hasNext()) {
+            T obj = i.next();
+            if (obj != null)
+                h += obj.hashCode();
+        }
+        return h;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof Set))
+            return false;
+        Collection<?> c = (Collection<?>) o;
+        if (c.size() != size())
+            return false;
+        try {
+            return containsAll(c);
+        } catch (ClassCastException | NullPointerException unused) {
+            return false;
+        }
     }
 }

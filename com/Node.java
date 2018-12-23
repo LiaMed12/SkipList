@@ -2,9 +2,9 @@ package com;
 
 public class Node<T extends Comparable<T>> {
     private T value;
-    public Node left, right, up, down;
+    Node<T> left, right, up, down;
 
-    public Node(T value) {
+    Node(T value) {
         this.value = value;
         left = right = up = down = null;
     }
@@ -13,8 +13,8 @@ public class Node<T extends Comparable<T>> {
         return value;
     }
 
-    public T setValue(T in) {
-        return this.value = in;
+    void setValue(T in) {
+        this.value = in;
     }
 
 }

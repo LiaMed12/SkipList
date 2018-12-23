@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import static junit.framework.TestCase.*;
 
@@ -22,9 +24,9 @@ public class SkipListTest {
 
         assertEquals(3, list.size());
         //Проверка на нахождения чисел добавленных в list
-        assertEquals(1, list.valueSearch(1).getValue());
-        assertEquals(4, list.valueSearch(4).getValue());
-        assertEquals(10, list.valueSearch(10).getValue());
+        assertEquals(1, (int) list.valueSearch(1).getValue());
+        assertEquals(4, (int) list.valueSearch(4).getValue());
+        assertEquals(10, (int) list.valueSearch(10).getValue());
     }
 
     @Test
@@ -45,7 +47,7 @@ public class SkipListTest {
         list.add(2);
         list.remove(9);
         //Проверка на то, что этого элемента нет (в данном случае он не нашел число 9, поэтому возвращает часло стоящее перед ним)
-        assertEquals(2, list.valueSearch(9).getValue());
+        assertEquals(2, (int) list.valueSearch(9).getValue());
     }
 
     @Test
@@ -74,18 +76,18 @@ public class SkipListTest {
     @Test
     public void hasNextAndNext() {
         SkipList<Integer> list = new SkipList<>();
+        ArrayList<Integer> m = new ArrayList<>();
         list.add(1);
         list.add(2);
         list.add(3);
-        Integer i = 0;
+        m.add(1);
+        m.add(2);
+        m.add(3);
         Iterator<Integer> listIter = list.iterator();
-        ArrayList<Integer> m = new ArrayList();
+        Iterator<Integer> mIter = m.iterator();
         while (listIter.hasNext()) {
-            i++;
-            assertEquals(i, listIter.next());
-            m.add(i);
+            assertEquals(mIter.next(), listIter.next());
         }
-        assertEquals(3, m.size());
     }
 
     @Test
@@ -96,17 +98,18 @@ public class SkipListTest {
         list.add(8);
         list.add(-10);
         Object[] m = list.toArray();
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (Object s : m) {
-            result += s + " ";
+            result.append(s).append(" ");
         }
-        assertEquals("-10 -3 2 8 ", result);
+        assertEquals("-10 -3 2 8 ", result.toString());
     }
 
     @Test
     public void containsAll() {
         SkipList<Integer> list = new SkipList<>();
         list.add(45);
+        list.add(12);
         SkipList<Integer> list2 = new SkipList<>();
         list2.add(45);
         assertTrue(list.containsAll(list2));
@@ -162,4 +165,97 @@ public class SkipListTest {
         list.removeAll(list2);
         assertEquals(2, list.size());
     }
+
+    @Test
+    public void first() {
+        SkipList<Integer> list = new SkipList<>();
+        list.add(45);
+        list.add(-1);
+        list.add(3);
+        assertEquals(-1, (int) list.first());
+    }
+
+    @Test
+    public void last() {
+        SkipList<Integer> list = new SkipList<>();
+        list.add(45);
+        list.add(-1);
+        list.add(3);
+        assertEquals(45, (int) list.last());
+    }
+
+    @Test
+    public void subset() {
+        SkipList<Integer> list = new SkipList<>();
+        list.add(45);
+        list.add(-1);
+        list.add(3);
+        list.add(5);
+        list.add(8);
+        SortedSet<Integer> n = list.subSet(3, 45);
+        SortedSet<Integer> m = new TreeSet<>();
+        m.add(45);
+        m.add(-1);
+        m.add(3);
+        m.add(5);
+        m.add(8);
+        assertEquals(m.subSet(3, 45), n);
+        assertEquals(m, list);
+
+    }
+
+    @Test
+    public void headset() {
+        SkipList<Integer> list = new SkipList<>();
+        list.add(45);
+        list.add(-1);
+        list.add(3);
+        list.add(5);
+        list.add(8);
+        SortedSet<Integer> n = list.headSet(5);
+        SortedSet<Integer> m = new TreeSet<>();
+        m.add(45);
+        m.add(-1);
+        m.add(3);
+        m.add(5);
+        m.add(8);
+        assertEquals(m.headSet(5), n);
+        assertEquals(m, list);
+    }
+
+    @Test
+    public void tailset() {
+        SkipList<Integer> list = new SkipList<>();
+        list.add(45);
+        list.add(-1);
+        list.add(3);
+        list.add(5);
+        list.add(8);
+        SortedSet<Integer> n = list.tailSet(5);
+        SortedSet<Integer> m = new TreeSet<>();
+        m.add(45);
+        m.add(-1);
+        m.add(3);
+        m.add(5);
+        m.add(8);
+        assertEquals(m.tailSet(5), n);
+        assertEquals(m, list);
+    }
+
+    @Test
+    public void hachcodeAndEquals() {
+        SkipList<Integer> x = new SkipList<>();
+        SkipList<Integer> y = new SkipList<>();
+        x.add(12);
+        x.add(8);
+        y.add(12);
+        y.add(8);
+        assertEquals(x.equals(y), y.equals(x));
+        assertEquals(x.hashCode(), y.hashCode());
+        x.add(1);
+        y.add(23);
+        assertEquals(x.equals(y), y.equals(x));
+        assertFalse(x.hashCode() == y.hashCode());
+    }
+
 }
