@@ -222,26 +222,7 @@ public class SkipListTest {
         assertEquals(m.headSet(5), n);
         assertEquals(m, list);
     }
-
-    @Test
-    public void tailset() {
-        SkipList<Integer> list = new SkipList<>();
-        list.add(45);
-        list.add(-1);
-        list.add(3);
-        list.add(5);
-        list.add(8);
-        SortedSet<Integer> n = list.tailSet(5);
-        SortedSet<Integer> m = new TreeSet<>();
-        m.add(45);
-        m.add(-1);
-        m.add(3);
-        m.add(5);
-        m.add(8);
-        assertEquals(m.tailSet(5), n);
-        assertEquals(m, list);
-    }
-
+    
 
 
 }
