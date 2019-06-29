@@ -46,7 +46,7 @@ class SkipListSet<T extends Comparable<T>>{
         return sort;
     }
 
-    SortedSet<T> tailSet() {
+    SortedSet<T> tailSet( ) {
         Node<T> point = list.valueSearch(to);
         Node<T> k = list.valueSearchDownNode(list.getTail());
         while (true) {
