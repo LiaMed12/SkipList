@@ -242,20 +242,6 @@ public class SkipListTest {
         assertEquals(m, list);
     }
 
-    @Test
-    public void hachcodeAndEquals() {
-        SkipList<Integer> x = new SkipList<>();
-        SkipList<Integer> y = new SkipList<>();
-        x.add(12);
-        x.add(8);
-        y.add(12);
-        y.add(8);
-        assertEquals(x.equals(y), y.equals(x));
-        assertEquals(x.hashCode(), y.hashCode());
-        x.add(1);
-        y.add(23);
-        assertEquals(x.equals(y), y.equals(x));
-        assertFalse(x.hashCode() == y.hashCode());
-    }
+
 
 }
